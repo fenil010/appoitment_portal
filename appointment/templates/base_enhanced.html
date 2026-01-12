@@ -126,7 +126,7 @@
         {# ROLE-BASED DASHBOARD LINK: Redirect to appropriate dashboard #}
         {# Checks user profile role to show patient or doctor dashboard #}
         {# ---------------------------------------------------------------- #}
-        {% if user.profile.role == 'patient' %}
+        {% if user.profile and user.profile.role == 'patient' %}
         {# Patient users see patient dashboard #}
         <a href="{% url 'patient_dashboard' %}" class="px-4 py-2 rounded-xl btn-primary font-semibold">
           Dashboard

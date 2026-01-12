@@ -37,7 +37,7 @@
                     <p class="text-2xl font-bold text-brand-success">{{ completed_appointments }}</p>
                     {% else %}
                     <p class="text-textc-muted text-sm">Today's Appointments</p>
-                    <p class="text-2xl font-bold text-brand-primary">{{ upcoming_appointments|length }}</p>
+                    <p class="text-2xl font-bold text-brand-primary">{{ todays_appointments }}</p>
                     {% endif %}
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-brand-primary/10 flex items-center justify-center">
@@ -92,8 +92,7 @@
                                         <h3 class="font-semibold text-textc-main">{{ appointment.patient_name }}</h3>
 
                                         {# Status badge showing current appointment status #}
-                                        <span
-                                            class="px-2 py-1 rounded-full text-xs bg-brand-primary/10 text-brand-primary">
+                                        <span class="px-2 py-1 rounded-full text-xs {% if appointment.status == 'pending' %}bg-brand-warning/10 text-brand-warning{% elif appointment.status == 'approved' %}bg-blue-100 text-blue-600{% elif appointment.status == 'scheduled' %}bg-brand-success/10 text-brand-success{% elif appointment.status == 'completed' %}bg-gray-100 text-gray-600{% elif appointment.status == 'cancelled' %}bg-brand-danger/10 text-brand-danger{% elif appointment.status == 'no_show' %}bg-orange-100 text-orange-600{% elif appointment.status == 'rejected' %}bg-red-100 text-red-600{% elif appointment.status == 'rescheduled' %}bg-purple-100 text-purple-600{% else %}bg-brand-primary/10 text-brand-primary{% endif %}">
                                             {{ appointment.get_status_display }}
                                         </span>
 
@@ -241,3 +240,331 @@
 </div>
 
 {% endblock %}
+
+<script>
+  // Initialize filter and search on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    // Set up status filter listener
+    const statusFilter = document.getElementById('statusFilter');
+    if (statusFilter) {
+      statusFilter.addEventListener('change', filterAppointments);
+    }
+
+    // Set up search listener
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', filterAppointments);
+    }
+  });
+
+  // Filter appointments based on status and search
+  function filterAppointments() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+    const appointmentItems = document.querySelectorAll('.appointment-item');
+
+    appointmentItems.forEach(item => {
+      const itemStatus = item.getAttribute('data-status');
+      const itemSearch = item.getAttribute('data-search') || '';
+      
+      const matchesStatus = !statusFilter || itemStatus === statusFilter;
+      const matchesSearch = !searchQuery || itemSearch.includes(searchQuery);
+
+      if (matchesStatus && matchesSearch) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  // Update appointment status
+  async function updateStatus(appointmentId, newStatus) {
+    const statusMessages = {
+      'approved': 'approve',
+      'rejected': 'reject',
+      'scheduled': 'schedule',
+      'completed': 'mark as completed',
+      'no_show': 'mark as no-show'
+    };
+
+    const message = statusMessages[newStatus] || newStatus;
+    if (!confirm(`Are you sure you want to ${message} this appointment?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/appointments/${appointmentId}/update-status/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': getCookie('csrftoken'),
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: `status=${newStatus}`
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        showNotification(`Appointment ${newStatus} successfully!`, 'success');
+        
+        // Update UI
+        updateAppointmentUI(appointmentId, newStatus);
+      } else {
+        showNotification(data.error || `Failed to ${message} appointment`, 'error');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showNotification('An error occurred while updating the appointment', 'error');
+    }
+  }
+
+    // Update appointment UI after status change
+  function updateAppointmentUI(appointmentId, newStatus) {
+    // Find appointment card by data attribute
+    const card = document.querySelector(`.appointment-item[data-status="${newStatus}"]`);
+    if (!card) return;
+
+    // Update status badge - find the span that contains status text
+    const statusBadge = card.querySelector('span[class*="bg-"]');
+    if (statusBadge) {
+      statusBadge.textContent = getStatusDisplay(newStatus);
+      statusBadge.className = `px-2 py-1 rounded-full text-xs ${getStatusClass(newStatus)}`;
+    }
+
+    // Update action buttons based on new status
+    const actionDiv = card.querySelector('.flex.flex-col.space-y-2');
+    if (actionDiv) {
+      actionDiv.innerHTML = getActionButtons(appointmentId, newStatus);
+    }
+
+    // Update card data attribute
+    card.setAttribute('data-status', newStatus);
+  }
+
+  // Get status display text
+  function getStatusDisplay(status) {
+    const statusMap = {
+      'pending': 'Pending',
+      'approved': 'Approved',
+      'scheduled': 'Scheduled',
+      'completed': 'Completed',
+      'cancelled': 'Cancelled',
+      'no_show': 'No Show',
+      'rejected': 'Rejected',
+      'rescheduled': 'Rescheduled'
+    };
+    return statusMap[status] || status;
+  }
+
+  // Get status badge color class
+  function getStatusClass(status) {
+    const classMap = {
+      'pending': 'bg-brand-warning/10 text-brand-warning',
+      'approved': 'bg-blue-100 text-blue-600',
+      'scheduled': 'bg-brand-success/10 text-brand-success',
+      'completed': 'bg-gray-100 text-gray-600',
+      'cancelled': 'bg-brand-danger/10 text-brand-danger',
+      'no_show': 'bg-orange-100 text-orange-600',
+      'rejected': 'bg-red-100 text-red-600',
+      'rescheduled': 'bg-purple-100 text-purple-600'
+    };
+    return classMap[status] || 'bg-brand-primary/10 text-brand-primary';
+  }
+
+  // Get action buttons HTML based on status
+  function getActionButtons(appointmentId, status) {
+    let buttons = '';
+
+    if (status === 'pending') {
+      buttons += `<button onclick="updateStatus(${appointmentId}, 'approved')" class="px-3 py-1 rounded-lg bg-brand-success/80 hover:bg-brand-success text-white transition">Approve</button>`;
+      buttons += `<button onclick="updateStatus(${appointmentId}, 'rejected')" class="px-3 py-1 rounded-lg bg-brand-danger/80 hover:bg-brand-danger text-white transition">Reject</button>`;
+    } else if (status === 'approved') {
+      buttons += `<button onclick="updateStatus(${appointmentId}, 'scheduled')" class="px-3 py-1 rounded-lg btn-primary transition">Schedule</button>`;
+    } else if (status === 'scheduled') {
+      buttons += `<button onclick="updateStatus(${appointmentId}, 'completed')" class="px-3 py-1 rounded-lg bg-brand-success hover:bg-brand-success/90 text-white transition">Complete</button>`;
+      buttons += `<button onclick="updateStatus(${appointmentId}, 'no_show')" class="px-3 py-1 rounded-lg bg-gray-500 hover:bg-gray-400 text-white transition">No Show</button>`;
+    }
+
+    buttons += `<button onclick="viewDetails(${appointmentId})" class="px-3 py-1 rounded-lg bg-brand-accent text-brand-primary hover:bg-brand-accent/80 transition">Details</button>`;
+
+    return buttons;
+  }
+
+  // View appointment details in modal
+  async function viewDetails(appointmentId) {
+    try {
+      const response = await fetch(`/api/appointments/${appointmentId}/details/`, {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        const appointment = data.appointment;
+        
+        // Create and show modal
+        showDetailsModal(appointment);
+      } else {
+        showNotification(data.error || 'Failed to load appointment details', 'error');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showNotification('An error occurred while loading appointment details', 'error');
+    }
+  }
+
+  // Show details modal
+  function showDetailsModal(appointment) {
+    const modalHtml = `
+      <div id="appointmentModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+          <div class="p-6 border-b border-brand-accent flex justify-between items-center">
+            <h3 class="text-xl font-semibold text-textc-main">Appointment Details</h3>
+            <button onclick="closeModal()" class="text-textc-muted hover:text-textc-main">
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+          <div class="p-6 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm text-textc-muted">Patient Name</p>
+                <p class="font-medium text-textc-main">${appointment.patient_name}</p>
+              </div>
+              <div>
+                <p class="text-sm text-textc-muted">Status</p>
+                <span class="px-2 py-1 text-xs rounded-full ${getStatusClass(appointment.status)}">${getStatusDisplay(appointment.status)}</span>
+              </div>
+              <div>
+                <p class="text-sm text-textc-muted">Date</p>
+                <p class="font-medium text-textc-main">${appointment.appointment_date}</p>
+              </div>
+              <div>
+                <p class="text-sm text-textc-muted">Time</p>
+                <p class="font-medium text-textc-main">${appointment.appointment_time}</p>
+              </div>
+              <div>
+                <p class="text-sm text-textc-muted">Email</p>
+                <p class="font-medium text-textc-main">${appointment.patient_email}</p>
+              </div>
+              <div>
+                <p class="text-sm text-textc-muted">Phone</p>
+                <p class="font-medium text-textc-main">${appointment.patient_phone || 'N/A'}</p>
+              </div>
+            </div>
+            ${appointment.reason ? `
+            <div>
+              <p class="text-sm text-textc-muted">Reason</p>
+              <p class="text-textc-main">${appointment.reason}</p>
+            </div>
+            ` : ''}
+            ${appointment.notes ? `
+            <div>
+              <p class="text-sm text-textc-muted">Notes</p>
+              <p class="text-textc-main">${appointment.notes}</p>
+            </div>
+            ` : ''}
+            <div>
+              <p class="text-sm text-textc-muted">Priority</p>
+              <span class="px-2 py-1 text-xs rounded-full bg-brand-warning/10 text-brand-warning">${appointment.priority}</span>
+            </div>
+            <div>
+              <p class="text-sm text-textc-muted">Created</p>
+              <p class="text-textc-main">${appointment.created_at}</p>
+            </div>
+          </div>
+          <div class="p-6 border-t border-brand-accent flex justify-end">
+            <button onclick="closeModal()" class="px-4 py-2 rounded-lg bg-brand-accent text-brand-primary hover:bg-brand-accent/80 transition">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  }
+
+  // Close modal
+  function closeModal() {
+    const modal = document.getElementById('appointmentModal');
+    if (modal) {
+      modal.remove();
+    }
+  }
+
+  // Mark all notifications as read
+  async function markAllRead() {
+    try {
+      const response = await fetch('/api/notifications/mark-all-read/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+
+      if (response.ok) {
+        showNotification('All notifications marked as read', 'success');
+        
+        // Update UI - remove notification highlights
+        const notificationItems = document.querySelectorAll('.bg-brand-surface');
+        notificationItems.forEach(item => {
+          item.classList.remove('bg-brand-primary/5');
+        });
+      } else {
+        showNotification('Failed to mark notifications as read', 'error');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showNotification('An error occurred', 'error');
+    }
+  }
+
+  // Show notification toast
+  function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 ${type === 'success' ? 'bg-brand-success text-white' : 'bg-brand-danger text-white'}`;
+    notification.innerHTML = `
+      <div class="flex items-center">
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+        <span>${message}</span>
+      </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Animate in
+    setTimeout(() => {
+      notification.classList.remove('translate-x-full');
+    }, 100);
+
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+      notification.classList.add('translate-x-full');
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300);
+    }, 3000);
+  }
+
+  // Get CSRF token for Django
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>

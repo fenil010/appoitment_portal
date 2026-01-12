@@ -203,10 +203,18 @@ def patient_dashboard(request):
         status__in=['approved', 'scheduled']
     )
 
-    # Statistics
+    # Statistics - pass as list for template
     total_appointments = appointments.count()
     completed_appointments = appointments.filter(status='completed').count()
     cancelled_appointments = appointments.filter(status='cancelled').count()
+    pending_appointments = appointments.filter(status='pending').count()
+    
+    stats = [
+        {'title': 'Total Appointments', 'value': total_appointments, 'icon': 'calendar-check', 'color': 'blue'},
+        {'title': 'Upcoming', 'value': upcoming_appointments.count(), 'icon': 'calendar-alt', 'color': 'yellow'},
+        {'title': 'Completed', 'value': completed_appointments, 'icon': 'check-circle', 'color': 'green'},
+        {'title': 'Cancelled', 'value': cancelled_appointments, 'icon': 'times-circle', 'color': 'red'},
+    ]
 
     # Get unread notifications count
     unread_notifications = request.user.notifications.filter(is_read=False).count()
@@ -215,9 +223,7 @@ def patient_dashboard(request):
         'appointments': appointments,
         'notifications': notifications,
         'upcoming_appointments': upcoming_appointments,
-        'total_appointments': total_appointments,
-        'completed_appointments': completed_appointments,
-        'cancelled_appointments': cancelled_appointments,
+        'stats': stats,
         'status_filter': status_filter,
         'unread_notifications': unread_notifications,
     }
@@ -261,6 +267,10 @@ def doctor_dashboard(request):
     total_appointments = appointments.count()
     pending_appointments = appointments.filter(status='pending').count()
     completed_appointments = appointments.filter(status='completed').count()
+    todays_appointments = appointments.filter(
+        appointment_date=timezone.now().date(),
+        status__in=['pending', 'approved', 'scheduled']
+    ).count()
 
     # Recent activity
     recent_appointments = appointments[:5]
@@ -276,6 +286,7 @@ def doctor_dashboard(request):
         'total_appointments': total_appointments,
         'pending_appointments': pending_appointments,
         'completed_appointments': completed_appointments,
+        'todays_appointments': todays_appointments,
         'status_filter': status_filter,
         'doctor': doctor,
         'unread_notifications': unread_notifications,
