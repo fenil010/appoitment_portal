@@ -23,8 +23,6 @@ venv.bak/
 db.sqlite3
 *.log
 local_settings.py
-
-# Django migrations cache
 **/migrations/__pycache__/
 
 # ===============================
@@ -34,10 +32,11 @@ staticfiles/
 media/
 
 # ===============================
-# VS Code
+# VS Code / IDE
 # ===============================
 .vscode/
 *.code-workspace
+.idea/
 
 # ===============================
 # macOS
@@ -57,9 +56,12 @@ cypress/screenshots/
 # Build / Cache
 # ===============================
 .cache/
-pytest_cache/
+.pytest_cache/
 .coverage
 htmlcov/
+build/
+dist/
+*.egg-info/
 
 # ===============================
 # Environment variables
