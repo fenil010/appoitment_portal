@@ -1,91 +1,263 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    /* Doctor Card Styles */
+    .doctor-card {
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 16px;
+        padding: 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    .doctor-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 40px rgba(15, 118, 110, 0.15);
+    }
+    .doctor-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        border: 4px solid #FFFFFF;
+        box-shadow: 0 4px 15px rgba(15, 118, 110, 0.2);
+    }
+    .doctor-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 4px;
+    }
+    .doctor-specialty {
+        color: #0F766E;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    .doctor-info-item {
+        display: flex;
+        align-items: center;
+        font-size: 0.875rem;
+        color: #4B5563;
+        margin-bottom: 8px;
+    }
+    .doctor-info-item i {
+        width: 20px;
+        margin-right: 10px;
+        color: #6B7280;
+    }
+    .rating-badge {
+        display: inline-flex;
+        align-items: center;
+        background: #FEF3C7;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #92400E;
+    }
+    .rating-badge i {
+        color: #F59E0B;
+        margin-right: 4px;
+    }
+    .btn-view-details {
+        display: block;
+        width: 100%;
+        padding: 12px 20px;
+        border-radius: 10px;
+        background: #F0FDFA;
+        color: #0F766E;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.2s ease;
+        border: 1px solid #CCFBF1;
+    }
+    .btn-view-details:hover {
+        background: #CCFBF1;
+    }
+    .btn-book-appointment {
+        display: block;
+        width: 100%;
+        padding: 14px 20px;
+        border-radius: 10px;
+        background: #0F766E;
+        color: #FFFFFF;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);
+    }
+    .btn-book-appointment:hover {
+        background: #115E59;
+        box-shadow: 0 6px 20px rgba(15, 118, 110, 0.45);
+        transform: translateY(-2px);
+    }
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #0F766E;
+        text-align: center;
+        margin-bottom: 8px;
+    }
+    .page-subtitle {
+        color: #6B7280;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .doctors-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+    }
+    @media (max-width: 1024px) {
+        .doctors-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (max-width: 640px) {
+        .doctors-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .card-header {
+        background: linear-gradient(135deg, #F0FDFA 0%, #E6FFFA 100%);
+        padding: 28px 24px 20px;
+        text-align: center;
+        border-bottom: 1px solid #E5E7EB;
+    }
+    .card-body {
+        padding: 20px 24px;
+        flex-grow: 1;
+    }
+    .card-footer {
+        padding: 0 24px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .fee-highlight {
+        display: inline-flex;
+        align-items: center;
+        background: #ECFDF5;
+        color: #047857;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        background: #FFFFFF;
+        border-radius: 16px;
+        border: 2px dashed #E5E7EB;
+    }
+    .empty-state i {
+        font-size: 48px;
+        color: #D1D5DB;
+        margin-bottom: 16px;
+    }
+    .empty-state p {
+        color: #6B7280;
+        font-size: 1.1rem;
+    }
+</style>
 
-<!-- Page Title -->
-<h2 class="text-3xl font-bold text-center mb-10 text-brand-primary">
-    Available Doctors
-</h2>
+<div style="max-width: 1200px; margin: 0 auto;">
 
-<!-- Doctors Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Page Header -->
+    <div style="margin-bottom: 48px;">
+        <h1 class="page-title">
+            <i class="fas fa-user-md" style="margin-right: 12px;"></i>
+            Available Doctors
+        </h1>
+        <p class="page-subtitle">Find and book appointments with our trusted healthcare professionals</p>
+    </div>
 
-    {% for d in doctors %}
-    <div class="card-style transition-all hover:-translate-y-1">
+    <!-- Doctors Grid -->
+    <div class="doctors-grid">
 
-        <div class="p-6 flex flex-col h-full">
-
-            <!-- Doctor Info -->
-            <div class="mb-4">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <h3 class="text-xl font-semibold text-textc-main">
-                            {{ d.name }}
-                        </h3>
-
-                        <p class="text-brand-primary font-medium mt-1">
-                            {{ d.specialization }}
-                        </p>
-                    </div>
-
-                    <!-- Rating Badge -->
-                    {% if d.total_reviews > 0 %}
-                    <div class="text-right">
-                        <div class="flex items-center gap-1">
-                            <i class="fas fa-star text-yellow-500 text-sm"></i>
-                            <span class="text-textc-main font-medium">{{ d.average_rating|floatformat:1 }}</span>
-                        </div>
-                        <p class="text-xs text-textc-muted">{{ d.total_reviews }} reviews</p>
-                    </div>
-                    {% endif %}
+        {% for d in doctors %}
+        <div class="doctor-card">
+            
+            <!-- Card Header with Avatar -->
+            <div class="card-header">
+                <div class="doctor-avatar">
+                    <i class="fas fa-user-md" style="font-size: 42px; color: #0F766E;"></i>
                 </div>
-
-                <p class="text-sm text-textc-muted mt-3 flex items-center">
-                    <i class="far fa-clock mr-2"></i>
-                    {{ d.available_from|default:"09:00" }} – {{ d.available_to|default:"17:00" }}
-                </p>
-
-                {% if d.consultation_fee %}
-                <p class="text-sm text-brand-success mt-2">
-                    <i class="fas fa-tag mr-1"></i>
-                    ${{ d.consultation_fee }} per visit
-                </p>
-                {% endif %}
-
-                {% if d.experience_years %}
-                <p class="text-sm text-textc-muted mt-1">
-                    <i class="fas fa-briefcase mr-1"></i>
-                    {{ d.experience_years }} years experience
-                </p>
+                
+                <h3 class="doctor-name" style="margin-top: 16px;">{{ d.name }}</h3>
+                <p class="doctor-specialty">{{ d.specialization }}</p>
+                
+                {% if d.total_reviews > 0 %}
+                <div style="margin-top: 12px;">
+                    <span class="rating-badge">
+                        <i class="fas fa-star"></i>
+                        {{ d.average_rating|floatformat:1 }} ({{ d.total_reviews }} reviews)
+                    </span>
+                </div>
                 {% endif %}
             </div>
 
-            <!-- Spacer -->
-            <div class="flex-grow"></div>
+            <!-- Card Body with Info -->
+            <div class="card-body">
+                <div class="doctor-info-item">
+                    <i class="far fa-clock"></i>
+                    <span>{{ d.available_from|default:"09:00" }} – {{ d.available_to|default:"17:00" }}</span>
+                </div>
 
-            <!-- Actions -->
-            <div class="mt-4 space-y-2">
-                <a href="{% url 'doctor_detail' d.id %}" class="block text-center w-full px-4 py-2 rounded-xl
-                          bg-brand-accent text-brand-primary font-medium
-                          hover:bg-brand-accent/80 transition">
-                    <i class="fas fa-info-circle mr-1"></i> View Details
+                {% if d.experience_years %}
+                <div class="doctor-info-item">
+                    <i class="fas fa-briefcase"></i>
+                    <span>{{ d.experience_years }} years experience</span>
+                </div>
+                {% endif %}
+
+                {% if d.consultation_fee %}
+                <div style="margin-top: 12px;">
+                    <span class="fee-highlight">
+                        <i class="fas fa-tag" style="margin-right: 6px;"></i>
+                        ${{ d.consultation_fee }} per visit
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Card Footer with Buttons -->
+            <div class="card-footer">
+                <a href="{% url 'doctor_detail' d.id %}" class="btn-view-details">
+                    <i class="fas fa-info-circle" style="margin-right: 6px;"></i>
+                    View Details
                 </a>
-                <a href="/book/{{ d.id }}/" class="block text-center w-full px-4 py-3 rounded-xl
-                          btn-primary font-semibold
-                          transition-all duration-300">
-                    <i class="fas fa-calendar-check mr-2"></i>
+                <a href="/book/{{ d.id }}/" class="btn-book-appointment">
+                    <i class="fas fa-calendar-check" style="margin-right: 8px;"></i>
                     Book Appointment
                 </a>
             </div>
+
         </div>
+        {% empty %}
+
+        <!-- Empty State -->
+        <div class="empty-state">
+            <i class="fas fa-user-md"></i>
+            <p>No doctors available at the moment.</p>
+            <p style="font-size: 0.9rem; margin-top: 8px;">Please check back later or contact support.</p>
+        </div>
+
+        {% endfor %}
     </div>
-    {% empty %}
 
-    <p class="text-center text-textc-muted col-span-3 py-10">
-        No doctors available.
-    </p>
-
-    {% endfor %}
 </div>
-
 {% endblock %}

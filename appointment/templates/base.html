@@ -56,36 +56,74 @@ tailwind.config = {
 <style>
 .card-style {
   background: #FFFFFF;
-  border: 1px solid #F5DAA7;
-  box-shadow: 0 4px 20px rgba(44, 24, 16, 0.08);
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border-radius: 1rem;
 }
 .card-style:hover {
-  box-shadow: 0 8px 30px rgba(44, 24, 16, 0.12);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
+/* Primary Button – Strong Medical Teal */
 .btn-primary {
-  background: #842A3B;
-  color: white;
-  transition: all 0.2s ease;
+  background-color: #0F766E !important; /* darker teal */
+  color: #000000 !important;
+  border: none;
+  box-shadow: 0 6px 18px rgba(15, 118, 110, 0.45);
+  transition: all 0.25s ease;
 }
+
 .btn-primary:hover {
-  background: #6B2230;
+  background-color: #115E59 !important; /* darker on hover */
+  box-shadow: 0 10px 28px rgba(15, 118, 110, 0.55);
+  transform: translateY(-2px);
 }
+
+/* Secondary Button – Outline Style */
 .btn-secondary {
-  background: #A3485A;
-  color: white;
-  transition: all 0.2s ease;
+  background-color: transparent !important;
+  color: #000000 !important;
+  border: 2px solid #0F766E !important;
+  font-weight: 600;
+  transition: all 0.25s ease;
 }
+
 .btn-secondary:hover {
-  background: #8B3D4D;
+  background-color: #0F766E !important;
+  color: #000000 !important;
+  box-shadow: 0 6px 18px rgba(15, 118, 110, 0.35);
 }
+
+/* Accent Button – Soft Highlight */
 .btn-accent {
-  background: #F5DAA7;
-  color: #842A3B;
-  transition: all 0.2s ease;
+  background-color: #ECFEFF !important;
+  color: #000000 !important;
+  border: 1px solid #99F6E4 !important;
+  font-weight: 600;
+  transition: all 0.25s ease;
 }
+
 .btn-accent:hover {
-  background: #EDD09A;
+  background-color: #CCFBF1 !important;
+  border-color: #5EEAD4 !important;
+}
+
+/* Navbar link styles */
+.nav-link {
+  color: #374151;
+  transition: color 0.2s ease;
+}
+.nav-link:hover {
+  color: #0D9488;
+}
+/* Text color utilities fallback */
+.text-textc-main {
+  color: #1F2937 !important;
+}
+.text-textc-muted {
+  color: #6B7280 !important;
+}
+.text-brand-primary {
+  color: #0D9488 !important;
 }
 </style>
 </head>
@@ -105,11 +143,11 @@ tailwind.config = {
 <!-- Navigation -->
 <div class="flex items-center space-x-6 text-sm md:text-base">
 
-<a href="/" class="text-textc-muted hover:text-brand-primary transition">
+<a href="/" style="color: #374151;" class="hover:text-teal-600 transition">
 <i class="fas fa-home mr-1"></i>Home
 </a>
 
-<a href="/doctors/" class="text-textc-muted hover:text-brand-primary transition">
+<a href="/doctors/" style="color: #374151;" class="hover:text-teal-600 transition">
 <i class="fas fa-user-md mr-1"></i>Doctors
 </a>
 
@@ -123,11 +161,11 @@ tailwind.config = {
     {# Patient users see patient dashboard, others see doctor dashboard #}
     {# ---------------------------------------------------------------- #}
     {% if user.profile.role == 'patient' %}
-        <a href="{% url 'patient_dashboard' %}" class="text-textc-muted hover:text-brand-primary transition">
+        <a href="{% url 'patient_dashboard' %}" class="px-4 py-2 rounded-xl btn-secondary font-semibold">
             <i class="fas fa-gauge mr-1"></i>Dashboard
         </a>
     {% else %}
-        <a href="{% url 'doctor_dashboard' %}" class="text-textc-muted hover:text-brand-primary transition">
+        <a href="{% url 'doctor_dashboard' %}" class="px-4 py-2 rounded-xl btn-secondary font-semibold">
             <i class="fas fa-gauge mr-1"></i>Dashboard
         </a>
     {% endif %}
