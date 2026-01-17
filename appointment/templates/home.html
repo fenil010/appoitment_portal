@@ -1,233 +1,417 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    /* Modern Teal Healthcare Theme */
+    .hero-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 15px;
+        background-color: #0F766E;
+        color: #FFFFFF;
+        box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .hero-btn-primary:hover {
+        background-color: #115E59;
+        box-shadow: 0 6px 20px rgba(15, 118, 110, 0.45);
+        transform: translateY(-2px);
+    }
+    .hero-btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 15px;
+        background-color: #FFFFFF;
+        color: #0F766E;
+        border: 2px solid #0F766E;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .hero-btn-secondary:hover {
+        background-color: #F0FDFA;
+        box-shadow: 0 4px 14px rgba(15, 118, 110, 0.2);
+    }
+    .stat-card {
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 16px;
+        padding: 24px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+    .doctor-card {
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+    }
+    .doctor-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+    .feature-card {
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 16px;
+        padding: 24px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+    }
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+    .icon-circle {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+    .icon-circle-lg {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+    .section-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #0F766E;
+        margin-bottom: 8px;
+    }
+    .section-subtitle {
+        color: #6B7280;
+        font-size: 1rem;
+    }
+</style>
+
 <div class="max-w-7xl mx-auto">
 
-    <!-- ================= HERO ================= -->
-    <section class="grid md:grid-cols-2 gap-12 items-center mb-20">
-
-        <!-- Text -->
+    <!-- ================= HERO SECTION ================= -->
+    <section style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; margin-bottom: 64px;">
+        
+        <!-- Left: Text Content -->
         <div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-textc-main leading-tight">
-                Book Doctor Appointments
-                <span class="block text-brand-primary">Effortlessly</span>
+            {% if user.is_authenticated and user.profile.role == 'doctor' %}
+            <h1 style="font-size: 2.75rem; font-weight: 700; color: #1F2937; line-height: 1.2; margin-bottom: 16px;">
+                Manage Your<br>
+                <span style="color: #0F766E;">Practice</span><br>
+                Efficiently
             </h1>
 
-            <p class="text-textc-muted mb-8 text-lg max-w-xl">
-                Find trusted doctors, check availability, and book appointments in seconds.
-                Manage your health with our modern appointment platform.
+            <p style="color: #6B7280; font-size: 1.125rem; margin-bottom: 24px; max-width: 480px;">
+                Welcome back, Dr. {{ user.doctor.name }}! View and manage your appointments, update availability, and connect with your patients.
             </p>
 
-            <div class="flex flex-col sm:flex-row gap-4">
-                <a href="/doctors/" class="inline-flex items-center px-6 py-3 rounded-xl
-                      btn-primary font-semibold">
-                    <i class="fas fa-search mr-2"></i>
+            <!-- Feature Pills for Doctors -->
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 32px;">
+                <span style="display: inline-flex; align-items: center; padding: 8px 16px; background: #F0FDFA; border-radius: 20px; font-size: 14px; color: #0F766E;">
+                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i> Easy Scheduling
+                </span>
+                <span style="display: inline-flex; align-items: center; padding: 8px 16px; background: #F0FDFA; border-radius: 20px; font-size: 14px; color: #0F766E;">
+                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i> Patient Management
+                </span>
+                <span style="display: inline-flex; align-items: center; padding: 8px 16px; background: #F0FDFA; border-radius: 20px; font-size: 14px; color: #0F766E;">
+                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i> Secure Platform
+                </span>
+            </div>
+            {% else %}
+            <h1 style="font-size: 2.75rem; font-weight: 700; color: #1F2937; line-height: 1.2; margin-bottom: 16px;">
+                Book Doctor<br>
+                <span style="color: #0F766E;">Appointments</span><br>
+                Effortlessly
+            </h1>
+
+            <p style="color: #6B7280; font-size: 1.125rem; margin-bottom: 24px; max-width: 480px;">
+                A clean and modern healthcare platform to find trusted doctors, check availability and manage appointments — all in one place.
+            </p>
+
+            <!-- Feature Pills -->
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 32px;">
+                <span style="display: inline-flex; align-items: center; padding: 8px 16px; background: #F0FDFA; border-radius: 20px; font-size: 14px; color: #0F766E;">
+                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i> 24/7 Access
+                </span>
+                <span style="display: inline-flex; align-items: center; padding: 8px 16px; background: #F0FDFA; border-radius: 20px; font-size: 14px; color: #0F766E;">
+                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i> Trusted Doctors
+                </span>
+                <span style="display: inline-flex; align-items: center; padding: 8px 16px; background: #F0FDFA; border-radius: 20px; font-size: 14px; color: #0F766E;">
+                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i> Secure Platform
+                </span>
+            </div>
+            {% endif %}
+
+            <!-- CTA Buttons -->
+            <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+                {% if not user.is_authenticated or user.profile.role == 'patient' %}
+                <a href="/doctors/" class="hero-btn-primary">
+                    <i class="fas fa-search" style="margin-right: 8px;"></i>
                     Find Doctors
                 </a>
+                {% else %}
+                <a href="{% url 'doctor_dashboard' %}" class="hero-btn-primary">
+                    <i class="fas fa-calendar-alt" style="margin-right: 8px;"></i>
+                    Manage Appointments
+                </a>
+                {% endif %}
 
                 {% if not user.is_authenticated %}
-                <a href="{% url 'signup_patient' %}" class="inline-flex items-center px-6 py-3 rounded-xl
-                          btn-accent font-medium">
-                    <i class="fas fa-user-plus mr-2"></i>
-                    Sign Up as Patient
+                <a href="{% url 'signup_patient' %}" class="hero-btn-secondary">
+                    <i class="fas fa-user-plus" style="margin-right: 8px;"></i>
+                    Sign Up Free
                 </a>
                 {% else %}
-                <a href="{% if user.profile.role == 'patient' %}{% url 'patient_dashboard' %}{% else %}{% url 'doctor_dashboard' %}{% endif %}"
-                    class="inline-flex items-center px-6 py-3 rounded-xl
-                          btn-secondary font-semibold">
-                    <i class="fas fa-tachometer-alt mr-2"></i>
-                    Go to Dashboard
+                <a href="{% if user.profile.role == 'patient' %}{% url 'patient_dashboard' %}{% else %}{% url 'doctor_dashboard' %}{% endif %}" class="hero-btn-secondary">
+                    <i class="fas fa-th-large" style="margin-right: 8px;"></i>
+                    Dashboard
                 </a>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Visual -->
-        <div class="hidden md:flex justify-center">
-            <div class="relative">
-                <div class="w-80 h-80 rounded-full
-                        bg-brand-accent/50
-                        flex items-center justify-center">
-                    <i class="fas fa-user-md text-7xl text-brand-primary"></i>
+        <!-- Right: Visual -->
+        <div style="display: flex; justify-content: center;">
+            <div style="position: relative;">
+                <div style="width: 280px; height: 280px; border-radius: 50%; background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 60px rgba(15, 118, 110, 0.15);">
+                    <i class="fas fa-user-md" style="font-size: 80px; color: #0F766E;"></i>
                 </div>
-
-                <div
-                    class="absolute -top-4 -right-4 w-16 h-16 bg-brand-success/20 rounded-full flex items-center justify-center">
-                    <i class="fas fa-calendar-check text-xl text-brand-success"></i>
+                
+                <!-- Floating Badge 1 -->
+                <div style="position: absolute; top: -10px; right: -10px; width: 60px; height: 60px; background: #FFFFFF; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.1);">
+                    <i class="fas fa-calendar-check" style="font-size: 24px; color: #10B981;"></i>
                 </div>
-
-                <div
-                    class="absolute -bottom-4 -left-4 w-12 h-12 bg-brand-warning/20 rounded-full flex items-center justify-center">
-                    <i class="fas fa-heart text-lg text-brand-warning"></i>
+                
+                <!-- Floating Badge 2 -->
+                <div style="position: absolute; bottom: 10px; left: -20px; width: 50px; height: 50px; background: #FFFFFF; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.1);">
+                    <i class="fas fa-heart" style="font-size: 20px; color: #EF4444;"></i>
                 </div>
             </div>
         </div>
-
     </section>
 
     <!-- ================= STATISTICS ================= -->
-    <section class="mb-20">
-
-        <div class="text-center mb-10">
-            <h2 class="text-3xl font-bold text-textc-main mb-2">Platform Statistics</h2>
-            <p class="text-textc-muted">Trusted by patients and doctors nationwide</p>
+    <section style="margin-bottom: 64px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 class="section-title">Platform Statistics</h2>
+            <p class="section-subtitle">Trusted by patients and doctors nationwide</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            <div class="card-style p-6 text-center transition-all hover:-translate-y-1">
-                <div class="w-16 h-16 bg-brand-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-user-md text-2xl text-brand-primary"></i>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+            
+            <div class="stat-card">
+                <div class="icon-circle" style="background: #F0FDFA;">
+                    <i class="fas fa-user-md" style="font-size: 28px; color: #0F766E;"></i>
                 </div>
-                <h3 class="text-3xl font-bold text-textc-main">{{ total_doctors }}</h3>
-                <p class="text-textc-muted">Active Doctors</p>
+                <h3 style="font-size: 2.5rem; font-weight: 700; color: #1F2937;">{{ total_doctors }}</h3>
+                <p style="color: #6B7280;">Active Doctors</p>
             </div>
 
-            <div class="card-style p-6 text-center transition-all hover:-translate-y-1">
-                <div class="w-16 h-16 bg-brand-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-calendar-check text-2xl text-brand-success"></i>
+            <div class="stat-card">
+                <div class="icon-circle" style="background: #ECFDF5;">
+                    <i class="fas fa-calendar-check" style="font-size: 28px; color: #10B981;"></i>
                 </div>
-                <h3 class="text-3xl font-bold text-textc-main">{{ total_appointments }}</h3>
-                <p class="text-textc-muted">Total Appointments</p>
+                <h3 style="font-size: 2.5rem; font-weight: 700; color: #1F2937;">{{ total_appointments }}</h3>
+                <p style="color: #6B7280;">Appointments Booked</p>
             </div>
 
-            <div class="card-style p-6 text-center transition-all hover:-translate-y-1">
-                <div class="w-16 h-16 bg-brand-warning/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-clock text-2xl text-brand-warning"></i>
+            <div class="stat-card">
+                <div class="icon-circle" style="background: #FEF3C7;">
+                    <i class="fas fa-clock" style="font-size: 28px; color: #F59E0B;"></i>
                 </div>
-                <h3 class="text-3xl font-bold text-textc-main">{{ upcoming_appointments }}</h3>
-                <p class="text-textc-muted">Upcoming Appointments</p>
+                <h3 style="font-size: 2.5rem; font-weight: 700; color: #1F2937;">{{ upcoming_appointments }}</h3>
+                <p style="color: #6B7280;">Upcoming Appointments</p>
             </div>
 
         </div>
     </section>
 
     <!-- ================= FEATURED DOCTORS ================= -->
-    {# Display featured doctors if available #}
+    {% if not user.is_authenticated or user.profile.role == 'patient' %}
     {% if featured_doctors %}
-    <section class="mb-20">
-        <div class="text-center mb-10">
-            <h2 class="text-3xl font-bold text-textc-main mb-2">Featured Doctors</h2>
-            <p class="text-textc-muted">Experienced healthcare professionals you can trust</p>
+    <section style="margin-bottom: 64px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 style="font-size: 1.875rem; font-weight: 700; color: #1F2937; margin-bottom: 8px;">Featured Specialists</h2>
+            <p style="color: #4B5563; font-size: 1rem;">Experienced healthcare professionals you can trust</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
             {% for doctor in featured_doctors %}
-            <div class="card-style p-6 transition-all hover:-translate-y-1">
-                <div class="text-center">
-                    <div
-                        class="w-20 h-20 bg-brand-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-user-md text-3xl text-brand-primary"></i>
+            <div class="doctor-card">
+                <div style="text-align: center;">
+                    <div class="icon-circle-lg" style="background: #F0FDFA;">
+                        <i class="fas fa-user-md" style="font-size: 36px; color: #0F766E;"></i>
                     </div>
 
-                    <h3 class="text-xl font-semibold text-textc-main mb-1">{{ doctor.name }}</h3>
-                    <p class="text-brand-primary font-medium mb-2">{{ doctor.specialization }}</p>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #111827; margin-bottom: 6px;">{{ doctor.name }}</h3>
+                    <p style="color: #0F766E; font-weight: 600; font-size: 0.95rem; margin-bottom: 12px;">{{ doctor.specialization }}</p>
 
-                    {# Display experience if available #}
                     {% if doctor.experience_years %}
-                    <p class="text-textc-muted text-sm mb-1">
+                    <p style="color: #6B7280; font-size: 14px; margin-bottom: 6px;">
+                        <i class="fas fa-briefcase" style="margin-right: 6px; color: #9CA3AF;"></i>
                         {{ doctor.experience_years }} years experience
                     </p>
                     {% endif %}
 
-                    {# Display consultation fee if available and greater than 0 #}
                     {% if doctor.consultation_fee and doctor.consultation_fee > 0 %}
-                    <p class="text-brand-success font-semibold mb-4">
-                        ₹{{ doctor.consultation_fee }}
+                    <p style="color: #111827; font-weight: 700; font-size: 1rem; margin-bottom: 16px;">
+                        <i class="fas fa-tag" style="margin-right: 6px; color: #0F766E;"></i>
+                        ${{ doctor.consultation_fee }} <span style="font-weight: 400; color: #6B7280;">per visit</span>
                     </p>
                     {% endif %}
 
-                    <a href="{% url 'book' doctor.id %}" class="inline-flex items-center px-4 py-2 rounded-xl
-                              btn-primary font-semibold text-sm">
-                        <i class="fas fa-calendar-plus mr-2"></i>
-                        Book Appointment
-                    </a>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
+                        <a href="{% url 'doctor_detail' doctor.id %}" 
+                           style="display: block; padding: 12px 20px; border-radius: 10px; background: #F0FDFA; color: #0F766E; font-weight: 600; text-decoration: none; text-align: center; transition: all 0.2s; border: 1px solid #CCFBF1;">
+                            <i class="fas fa-info-circle" style="margin-right: 6px;"></i>View Details
+                        </a>
+                        <a href="{% url 'book' doctor.id %}" 
+                           style="display: block; padding: 14px 20px; border-radius: 10px; background: #0F766E; color: #1F2937; font-weight: 600; text-decoration: none; text-align: center; transition: all 0.2s; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);">
+                            <i class="fas fa-calendar-check" style="margin-right: 6px;"></i>Book Appointment
+                        </a>
+                    </div>
                 </div>
             </div>
             {% empty %}
-            {# Show message when no doctors in loop #}
-            <p class="text-center text-textc-muted col-span-full py-8">
+            <p style="text-align: center; color: #6B7280; grid-column: 1 / -1; padding: 32px;">
                 No doctors available at this time.
             </p>
             {% endfor %}
         </div>
 
-        <div class="text-center mt-8">
-            <a href="{% url 'doctors' %}" class="inline-flex items-center px-6 py-3 rounded-xl
-                  btn-accent font-medium">
-                <i class="fas fa-list mr-2"></i>
+        <div style="text-align: center; margin-top: 32px;">
+            <a href="{% url 'doctors' %}" class="hero-btn-secondary">
+                <i class="fas fa-list" style="margin-right: 8px;"></i>
                 View All Doctors
             </a>
         </div>
     </section>
-    {% else %}
-    {# Show fallback when featured_doctors is not provided #}
-    <section class="mb-20 text-center">
-        <p class="text-textc-muted py-8">Featured doctors are not available at the moment.</p>
-    </section>
+    {% endif %}
     {% endif %}
 
     <!-- ================= FEATURES ================= -->
-    <section class="mb-20">
-
-        <div class="text-center mb-10">
-            <h2 class="text-3xl font-bold text-textc-main mb-2">Why Choose Our Platform?</h2>
-            <p class="text-textc-muted">Built for modern healthcare needs</p>
+    <section style="margin-bottom: 64px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 class="section-title">Why Choose Our Platform?</h2>
+            <p class="section-subtitle">Built for modern healthcare needs</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-            <div class="card-style p-6 text-center transition-all hover:-translate-y-1">
-                <i class="fas fa-mobile-alt text-2xl text-brand-primary mb-3"></i>
-                <h3 class="font-semibold mb-2 text-textc-main">Mobile Friendly</h3>
-                <p class="text-sm text-textc-muted">Access appointments from any device</p>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+            
+            <div class="feature-card">
+                <div class="icon-circle" style="background: #F0FDFA;">
+                    <i class="fas fa-mobile-alt" style="font-size: 24px; color: #0F766E;"></i>
+                </div>
+                <h3 style="font-weight: 600; color: #1F2937; margin-bottom: 8px;">Mobile Friendly</h3>
+                <p style="font-size: 14px; color: #6B7280;">Access appointments from any device</p>
             </div>
 
-            <div class="card-style p-6 text-center transition-all hover:-translate-y-1">
-                <i class="fas fa-bell text-2xl text-brand-success mb-3"></i>
-                <h3 class="font-semibold mb-2 text-textc-main">Smart Notifications</h3>
-                <p class="text-sm text-textc-muted">Instant updates and reminders</p>
+            <div class="feature-card">
+                <div class="icon-circle" style="background: #ECFDF5;">
+                    <i class="fas fa-bell" style="font-size: 24px; color: #10B981;"></i>
+                </div>
+                <h3 style="font-weight: 600; color: #1F2937; margin-bottom: 8px;">Smart Notifications</h3>
+                <p style="font-size: 14px; color: #6B7280;">Instant updates and reminders</p>
             </div>
 
-            <div class="card-style p-6 text-center transition-all hover:-translate-y-1">
-                <i class="fas fa-shield-alt text-2xl text-brand-warning mb-3"></i>
-                <h3 class="font-semibold mb-2 text-textc-main">Secure & Private</h3>
-                <p class="text-sm text-textc-muted">Enterprise-grade data protection</p>
+            <div class="feature-card">
+                <div class="icon-circle" style="background: #FEF3C7;">
+                    <i class="fas fa-shield-alt" style="font-size: 24px; color: #F59E0B;"></i>
+                </div>
+                <h3 style="font-weight: 600; color: #1F2937; margin-bottom: 8px;">Secure & Private</h3>
+                <p style="font-size: 14px; color: #6B7280;">Enterprise-grade data protection</p>
             </div>
 
-            <div class="card-style p-6 text-center transition-all hover:-translate-y-1">
-                <i class="fas fa-clock text-2xl text-brand-secondary mb-3"></i>
-                <h3 class="font-semibold mb-2 text-textc-main">24/7 Availability</h3>
-                <p class="text-sm text-textc-muted">Book anytime that suits you</p>
+            <div class="feature-card">
+                <div class="icon-circle" style="background: #FEE2E2;">
+                    <i class="fas fa-clock" style="font-size: 24px; color: #EF4444;"></i>
+                </div>
+                <h3 style="font-weight: 600; color: #1F2937; margin-bottom: 8px;">24/7 Availability</h3>
+                <p style="font-size: 14px; color: #6B7280;">Book anytime that suits you</p>
             </div>
 
         </div>
     </section>
 
-    <!-- ================= CTA ================= -->
-    <section class="text-center">
-        <div class="card-style p-10">
+    <!-- ================= CTA SECTION ================= -->
+    <section style="margin-bottom: 40px;">
+        <div style="background: linear-gradient(135deg, #0F766E 0%, #115E59 100%); border-radius: 20px; padding: 48px; text-align: center; box-shadow: 0 10px 40px rgba(15, 118, 110, 0.3);">
+            
+            {% if user.is_authenticated and user.profile.role == 'doctor' %}
+            <h2 style="font-size: 2rem; font-weight: 700; color: #FFFFFF; margin-bottom: 12px;">
+                Manage Your Practice
+            </h2>
+            
+            <p style="color: #A7F3D0; max-width: 500px; margin: 0 auto 24px;">
+                View appointments, update your availability, and provide quality care to your patients.
+            </p>
 
-            <h2 class="text-3xl font-bold text-textc-main mb-4">
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;">
+                <a href="{% url 'doctor_dashboard' %}" 
+                   style="display: inline-flex; align-items: center; padding: 14px 28px; border-radius: 12px; background: #FFFFFF; color: #0F766E; font-weight: 600; text-decoration: none; transition: all 0.3s;">
+                    <i class="fas fa-calendar-alt" style="margin-right: 8px;"></i>
+                    View Appointments
+                </a>
+                <a href="{% url 'availability' %}" 
+                   style="display: inline-flex; align-items: center; padding: 14px 28px; border-radius: 12px; background: transparent; color: #FFFFFF; font-weight: 600; border: 2px solid #FFFFFF; text-decoration: none; transition: all 0.3s;">
+                    <i class="fas fa-clock" style="margin-right: 8px;"></i>
+                    Set Availability
+                </a>
+            </div>
+            {% elif not user.is_authenticated %}
+            <h2 style="font-size: 2rem; font-weight: 700; color: #FFFFFF; margin-bottom: 12px;">
                 Ready to Get Started?
             </h2>
-
-            <p class="text-textc-muted max-w-2xl mx-auto mb-8">
+            
+            <p style="color: #A7F3D0; max-width: 500px; margin: 0 auto 24px;">
                 Join thousands of patients who trust our platform for their healthcare needs.
             </p>
 
-            {% if not user.is_authenticated %}
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'signup_patient' %}" class="px-8 py-3 rounded-xl btn-primary font-semibold">
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;">
+                <a href="{% url 'signup_patient' %}" 
+                   style="display: inline-flex; align-items: center; padding: 14px 28px; border-radius: 12px; background: #FFFFFF; color: #0F766E; font-weight: 600; text-decoration: none; transition: all 0.3s;">
+                    <i class="fas fa-user-plus" style="margin-right: 8px;"></i>
                     Sign Up as Patient
                 </a>
-                <a href="{% url 'signup_doctor' %}" class="px-8 py-3 rounded-xl btn-secondary font-semibold">
+                <a href="{% url 'signup_doctor' %}" 
+                   style="display: inline-flex; align-items: center; padding: 14px 28px; border-radius: 12px; background: transparent; color: #FFFFFF; font-weight: 600; border: 2px solid #FFFFFF; text-decoration: none; transition: all 0.3s;">
+                    <i class="fas fa-stethoscope" style="margin-right: 8px;"></i>
                     Join as Doctor
                 </a>
             </div>
             {% else %}
-            <a href="{% if user.profile.role == 'patient' %}{% url 'patient_dashboard' %}{% else %}{% url 'doctor_dashboard' %}{% endif %}"
-                class="px-8 py-3 rounded-xl btn-primary font-semibold">
+            <h2 style="font-size: 2rem; font-weight: 700; color: #FFFFFF; margin-bottom: 12px;">
+                Ready to Get Started?
+            </h2>
+            
+            <p style="color: #A7F3D0; max-width: 500px; margin: 0 auto 24px;">
+                Find a doctor and book your next appointment today.
+            </p>
+
+            <a href="{% url 'patient_dashboard' %}" 
+               style="display: inline-flex; align-items: center; padding: 14px 28px; border-radius: 12px; background: #FFFFFF; color: #0F766E; font-weight: 600; text-decoration: none; transition: all 0.3s;">
+                <i class="fas fa-th-large" style="margin-right: 8px;"></i>
                 Go to Dashboard
             </a>
             {% endif %}
