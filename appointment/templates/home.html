@@ -115,6 +115,30 @@
         
         <!-- Left: Text Content -->
         <div>
+            {% if user.is_authenticated and user.profile.role == 'doctor' %}
+            <h1 style="font-size: 2.75rem; font-weight: 700; color: #1F2937; line-height: 1.2; margin-bottom: 16px;">
+                Manage Your<br>
+                <span style="color: #0F766E;">Practice</span><br>
+                Efficiently
+            </h1>
+
+            <p style="color: #6B7280; font-size: 1.125rem; margin-bottom: 24px; max-width: 480px;">
+                Welcome back, Dr. {{ user.doctor.name }}! View and manage your appointments, update availability, and connect with your patients.
+            </p>
+
+            <!-- Feature Pills for Doctors -->
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 32px;">
+                <span style="display: inline-flex; align-items: center; padding: 8px 16px; background: #F0FDFA; border-radius: 20px; font-size: 14px; color: #0F766E;">
+                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i> Easy Scheduling
+                </span>
+                <span style="display: inline-flex; align-items: center; padding: 8px 16px; background: #F0FDFA; border-radius: 20px; font-size: 14px; color: #0F766E;">
+                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i> Patient Management
+                </span>
+                <span style="display: inline-flex; align-items: center; padding: 8px 16px; background: #F0FDFA; border-radius: 20px; font-size: 14px; color: #0F766E;">
+                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i> Secure Platform
+                </span>
+            </div>
+            {% else %}
             <h1 style="font-size: 2.75rem; font-weight: 700; color: #1F2937; line-height: 1.2; margin-bottom: 16px;">
                 Book Doctor<br>
                 <span style="color: #0F766E;">Appointments</span><br>
@@ -137,13 +161,21 @@
                     <i class="fas fa-check-circle" style="margin-right: 8px;"></i> Secure Platform
                 </span>
             </div>
+            {% endif %}
 
             <!-- CTA Buttons -->
             <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+                {% if not user.is_authenticated or user.profile.role == 'patient' %}
                 <a href="/doctors/" class="hero-btn-primary">
                     <i class="fas fa-search" style="margin-right: 8px;"></i>
                     Find Doctors
                 </a>
+                {% else %}
+                <a href="{% url 'doctor_dashboard' %}" class="hero-btn-primary">
+                    <i class="fas fa-calendar-alt" style="margin-right: 8px;"></i>
+                    Manage Appointments
+                </a>
+                {% endif %}
 
                 {% if not user.is_authenticated %}
                 <a href="{% url 'signup_patient' %}" class="hero-btn-secondary">
@@ -216,6 +248,7 @@
     </section>
 
     <!-- ================= FEATURED DOCTORS ================= -->
+    {% if not user.is_authenticated or user.profile.role == 'patient' %}
     {% if featured_doctors %}
     <section style="margin-bottom: 64px;">
         <div style="text-align: center; margin-bottom: 40px;">
@@ -275,6 +308,7 @@
         </div>
     </section>
     {% endif %}
+    {% endif %}
 
     <!-- ================= FEATURES ================= -->
     <section style="margin-bottom: 64px;">
@@ -324,6 +358,28 @@
     <section style="margin-bottom: 40px;">
         <div style="background: linear-gradient(135deg, #0F766E 0%, #115E59 100%); border-radius: 20px; padding: 48px; text-align: center; box-shadow: 0 10px 40px rgba(15, 118, 110, 0.3);">
             
+            {% if user.is_authenticated and user.profile.role == 'doctor' %}
+            <h2 style="font-size: 2rem; font-weight: 700; color: #FFFFFF; margin-bottom: 12px;">
+                Manage Your Practice
+            </h2>
+            
+            <p style="color: #A7F3D0; max-width: 500px; margin: 0 auto 24px;">
+                View appointments, update your availability, and provide quality care to your patients.
+            </p>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;">
+                <a href="{% url 'doctor_dashboard' %}" 
+                   style="display: inline-flex; align-items: center; padding: 14px 28px; border-radius: 12px; background: #FFFFFF; color: #0F766E; font-weight: 600; text-decoration: none; transition: all 0.3s;">
+                    <i class="fas fa-calendar-alt" style="margin-right: 8px;"></i>
+                    View Appointments
+                </a>
+                <a href="{% url 'availability' %}" 
+                   style="display: inline-flex; align-items: center; padding: 14px 28px; border-radius: 12px; background: transparent; color: #FFFFFF; font-weight: 600; border: 2px solid #FFFFFF; text-decoration: none; transition: all 0.3s;">
+                    <i class="fas fa-clock" style="margin-right: 8px;"></i>
+                    Set Availability
+                </a>
+            </div>
+            {% elif not user.is_authenticated %}
             <h2 style="font-size: 2rem; font-weight: 700; color: #FFFFFF; margin-bottom: 12px;">
                 Ready to Get Started?
             </h2>
@@ -332,7 +388,6 @@
                 Join thousands of patients who trust our platform for their healthcare needs.
             </p>
 
-            {% if not user.is_authenticated %}
             <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;">
                 <a href="{% url 'signup_patient' %}" 
                    style="display: inline-flex; align-items: center; padding: 14px 28px; border-radius: 12px; background: #FFFFFF; color: #0F766E; font-weight: 600; text-decoration: none; transition: all 0.3s;">
@@ -346,7 +401,15 @@
                 </a>
             </div>
             {% else %}
-            <a href="{% if user.profile.role == 'patient' %}{% url 'patient_dashboard' %}{% else %}{% url 'doctor_dashboard' %}{% endif %}" 
+            <h2 style="font-size: 2rem; font-weight: 700; color: #FFFFFF; margin-bottom: 12px;">
+                Ready to Get Started?
+            </h2>
+            
+            <p style="color: #A7F3D0; max-width: 500px; margin: 0 auto 24px;">
+                Find a doctor and book your next appointment today.
+            </p>
+
+            <a href="{% url 'patient_dashboard' %}" 
                style="display: inline-flex; align-items: center; padding: 14px 28px; border-radius: 12px; background: #FFFFFF; color: #0F766E; font-weight: 600; text-decoration: none; transition: all 0.3s;">
                 <i class="fas fa-th-large" style="margin-right: 8px;"></i>
                 Go to Dashboard

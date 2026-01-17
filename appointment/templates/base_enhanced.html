@@ -115,7 +115,9 @@
       <div class="flex items-center space-x-6 text-sm">
 
         <a href="/" class="text-textc-muted hover:text-brand-primary transition">Home</a>
+        {% if not user.is_authenticated or user.profile.role == 'patient' %}
         <a href="/doctors/" class="text-textc-muted hover:text-brand-primary transition">Doctors</a>
+        {% endif %}
 
         {# ======================================================================== #}
         {# AUTHENTICATED USER SECTION: Show dashboard link and user controls #}

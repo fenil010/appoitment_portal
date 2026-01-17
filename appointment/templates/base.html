@@ -147,9 +147,11 @@ tailwind.config = {
 <i class="fas fa-home mr-1"></i>Home
 </a>
 
+{% if not user.is_authenticated or user.profile.role == 'patient' %}
 <a href="/doctors/" style="color: #374151;" class="hover:text-teal-600 transition">
 <i class="fas fa-user-md mr-1"></i>Doctors
 </a>
+{% endif %}
 
 {# ======================================================================== #}
 {# AUTHENTICATED USER SECTION: Show dashboard, notifications, and user menu #}
